@@ -1,8 +1,9 @@
 """ Database models and utilities """
 import logging
+import decimal
 import psycopg2
 from datetime import datetime
-from rawl import RawlBase
+from rawl import RawlBase, RawlJSONEncoder
 from .config import LOGGER
 
 log = LOGGER.getChild('db')
@@ -10,10 +11,27 @@ log = LOGGER.getChild('db')
 
 class InvalidRange(IndexError): pass
 
+
+class JSONEncoder(RawlJSONEncoder):
+    """ 
+    A JSON encoder that can convert python's Decimal
+    """
+    def default(self, o):
+        if type(o) == decimal.Decimal:
+            # This sucks, but is maybe the only way to know?
+            if '.' in str(o):
+                return float(o)
+            else:
+                return int(o)
+        return super(JSONEncoder, self).default(o)
+
+
 class BlockModel(RawlBase):
     def __init__(self, dsn: str):
         super(BlockModel, self).__init__(dsn, table_name='block', 
-            columns=['block_no', 'block_time'])
+            columns=['block_number', 'block_timestamp', 'hash', 'miner', 
+                     'nonce', 'difficulty', 'gas_used', 'gas_limit', 'size'], 
+            pk_name='block_number')
 
     def get_range(self, start: datetime, end: datetime) -> tuple:
         """ Get a range of blocks from start to end """

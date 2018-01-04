@@ -14,7 +14,7 @@ def beInteger(v):
         try:
             return int(v)
         except ValueError:
-            raise InvalidInput()
+            raise InvalidInput("Input needs to be an integer")
 
 def beString(v):
     """ Try and make v a string """

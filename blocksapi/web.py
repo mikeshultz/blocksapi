@@ -1,10 +1,12 @@
+import json
 from tornado import httpserver
 from tornado import gen
 from tornado.ioloop import IOLoop
 import tornado.web
 from .config import DSN
-from .db import BlockModel, TransactionModel
+from .db import JSONEncoder, BlockModel, TransactionModel
 from .validate import InvalidInput, beInteger, beHash
+from .utils import results_hex_format
 
 BLOCKS = BlockModel(DSN)
 TRANSACTIONS = TransactionModel(DSN)
@@ -23,23 +25,22 @@ class JsonHandler(tornado.web.RequestHandler):
                 self.send_error(400, message=message) # Bad Request
 
         # Set up response dictionary.
-        self.response = dict()
+        self.response = {}
 
     def set_default_headers(self):
         self.set_header('Content-Type', 'application/json')
 
     def write_error(self, status_code, **kwargs):
         if 'message' not in kwargs:
-            if status_code == 405:
-                kwargs['message'] = 'Invalid HTTP method.'
-            else:
-                kwargs['message'] = 'Unknown error.'
+            kwargs['message'] = 'Unknown error.'
+        if 'exec_info' in kwargs:
+            print(kwargs.pop('exec_info'))
 
         self.response = kwargs
         self.write_json()
 
     def write_json(self):
-        output = json.dumps(self.response)
+        output = json.dumps(self.response, cls=JSONEncoder)
         self.write(output)
 
 
@@ -58,7 +59,12 @@ class BlockHandler(JsonHandler):
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
             
-            self.response['results'] = BLOCKS.get(block_number)
+            res = BLOCKS.get(block_number)
+
+            # Format the hash field properly
+            res = results_hex_format(res, 'hash')
+
+            self.response['results'] = res
 
             self.write_json()
 
@@ -150,9 +156,9 @@ class TransactionHandler(JsonHandler):
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
+            (r"/block/?", BlockHandler),
+            (r"/transaction/?", TransactionHandler),
             (r"/?", MainHandler),
-            (r"block/?", BlockHandler),
-            (r"transaction/?", TransactionHandler),
         ]
         tornado.web.Application.__init__(self, handlers)
 
