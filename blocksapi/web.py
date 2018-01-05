@@ -78,7 +78,12 @@ class BlockHandler(JsonHandler):
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
             
-            self.response['results'] = BLOCKS.get_range_number(start, end)
+            res = BLOCKS.get_range_number(start, end)
+
+            # Format the hash field properly
+            res = results_hex_format(res, 'hash')
+
+            self.response['results'] = res
 
             self.write_json()
 
@@ -92,7 +97,12 @@ class BlockHandler(JsonHandler):
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
 
-            self.response['results'] = BLOCKS.get_range(start_time, end_time)
+            res = BLOCKS.get_range(start_time, end_time)
+
+            # Format the hash field properly
+            res = results_hex_format(res, 'hash')
+
+            self.response['results'] = res
 
             self.write_json()
 

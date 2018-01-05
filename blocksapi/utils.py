@@ -10,6 +10,8 @@ def results_hex_format(results, field):
         in postgres' weird way of storing hex as varchar
     """
     for i in range(0, len(results)):
-        if field in results[i]:
-            results[i].update({ field: pg_varchar_to_hex(results[i][field]) })
+        if hasattr(results[i], field):
+            results[i][field] = pg_varchar_to_hex(results[i][field])
+        i += 1
+    print(results)
     return results
