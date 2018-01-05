@@ -1,4 +1,7 @@
 """ Data validation and coercion """
+import re
+from datetime import datetime
+from dateutil.parser import parse as parse_date
 
 
 class InvalidInput(ValueError):
@@ -6,9 +9,9 @@ class InvalidInput(ValueError):
     pass
 
 
-def beInteger(v):
+def be_integer(v):
     """ Try and make v an integer or throw """
-    if type(v) == int:
+    if isinstance(v, int):
         return v
     else:
         try:
@@ -16,20 +19,20 @@ def beInteger(v):
         except ValueError:
             raise InvalidInput("Input needs to be an integer")
 
-def beString(v):
+def be_string(v):
     """ Try and make v a string """
-    if type(v) == bytes:
+    if isinstance(v, bytes):
         v = v.decode('utf-8')
 
-    if type(v) != str:
+    if not isinstance(v, str):
         raise InvalidInput("Input is not a string")
 
     return v
 
-def beHash(v):
+def be_hash(v):
     """ Make sure v is a hexidecimal hash """
     
-    v = beString(v)
+    v = be_string(v)
 
     if not re.match(r'^(0x)?[A-Fa-f0-9]+$', v):
         raise InvalidInput("String is not a hash")
@@ -39,3 +42,15 @@ def beHash(v):
         return '0x' + v
     else:
         return v
+
+def be_datetime(v):
+    """ Make sure v is a date """
+    if isinstance(v, datetime):
+        return v
+    elif isinstance(v, str):
+        try:
+            return parse_date(v)
+        except ValueError as e:
+            raise InvalidInput(str(e))
+    else:
+        raise InvalidInput("Unable to parse %s as a date" % type(v))

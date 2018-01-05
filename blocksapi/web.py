@@ -3,9 +3,9 @@ from tornado import httpserver
 from tornado import gen
 from tornado.ioloop import IOLoop
 import tornado.web
-from .config import DSN
+from .config import DSN, DEFAULT_LIMIT
 from .db import JSONEncoder, BlockModel, TransactionModel
-from .validate import InvalidInput, beInteger, beHash
+from .validate import InvalidInput, be_integer, be_hash, be_datetime
 from .utils import results_hex_format
 
 BLOCKS = BlockModel(DSN)
@@ -36,6 +36,7 @@ class JsonHandler(tornado.web.RequestHandler):
         if 'exec_info' in kwargs:
             print(kwargs.pop('exec_info'))
 
+        self.set_status(status_code)
         self.response = kwargs
         self.write_json()
 
@@ -55,7 +56,7 @@ class BlockHandler(JsonHandler):
         if self.request.arguments.get('block_number'):
 
             try:
-                block_number = beInteger(self.request.arguments['block_number'])
+                block_number = be_integer(self.request.arguments['block_number'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
             
@@ -64,6 +65,8 @@ class BlockHandler(JsonHandler):
             # Format the hash field properly
             res = results_hex_format(res, 'hash')
 
+            self.response['page'] = 1
+            self.response['pages'] = 1
             self.response['results'] = res
 
             self.write_json()
@@ -73,16 +76,25 @@ class BlockHandler(JsonHandler):
             and self.request.arguments.get('end'):
 
             try:
-                start = beInteger(self.request.arguments['start'])
-                end = beInteger(self.request.arguments['end'])
+                start = be_integer(self.request.arguments['start'])
+                end = be_integer(self.request.arguments['end'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
+                return
+
+            offset = 0
+            if self.request.arguments.get('page'):
+                try:
+                    offset = int(self.request.arguments['page']) * DEFAULT_LIMIT
+                except ValueError:
+                    self.write_error(400, message="Invalid page")
             
-            res = BLOCKS.get_range_number(start, end)
+            res = BLOCKS.get_range_number(start, end, offset=offset)
 
             # Format the hash field properly
             res = results_hex_format(res, 'hash')
 
+            self.response['page'] = self.request.arguments.get('page', 1)
             self.response['results'] = res
 
             self.write_json()
@@ -92,16 +104,25 @@ class BlockHandler(JsonHandler):
             and self.request.arguments.get('end_time'):
 
             try:
-                start_time = beInteger(self.request.arguments['start_time'])
-                end_time = beInteger(self.request.arguments['end_time'])
+                start_time = be_datetime(self.request.arguments['start_time'])
+                end_time = be_datetime(self.request.arguments['end_time'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
+                return
 
-            res = BLOCKS.get_range(start_time, end_time)
+            offset = 0
+            if self.request.arguments.get('page'):
+                try:
+                    offset = int(self.request.arguments['page']) * DEFAULT_LIMIT
+                except ValueError:
+                    self.write_error(400, message="Invalid page")
+
+            res = BLOCKS.get_range_date(start_time, end_time, offset=offset)
 
             # Format the hash field properly
             res = results_hex_format(res, 'hash')
 
+            self.response['page'] = self.request.arguments.get('page', 1)
             self.response['results'] = res
 
             self.write_json()
@@ -117,7 +138,7 @@ class TransactionHandler(JsonHandler):
         if self.request.arguments.get('hash'):
 
             try:
-                tx_hash = beHash(self.request.arguments['hash'])
+                tx_hash = be_hash(self.request.arguments['hash'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
             
@@ -129,7 +150,7 @@ class TransactionHandler(JsonHandler):
         elif self.request.arguments.get('block_number'):
 
             try:
-                block_number = beInteger(self.request.arguments['block_number'])
+                block_number = be_integer(self.request.arguments['block_number'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
             
@@ -143,9 +164,9 @@ class TransactionHandler(JsonHandler):
 
             try:
                 if self.request.arguments.get('from_address'):
-                    from_address = beHash(self.request.arguments['from_address'])
+                    from_address = be_hash(self.request.arguments['from_address'])
                 if self.request.arguments.get('to_address'):
-                    to_address = beHash(self.request.arguments['to_address'])
+                    to_address = be_hash(self.request.arguments['to_address'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
 

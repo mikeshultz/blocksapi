@@ -13,5 +13,4 @@ def results_hex_format(results, field):
         if hasattr(results[i], field):
             results[i][field] = pg_varchar_to_hex(results[i][field])
         i += 1
-    print(results)
     return results

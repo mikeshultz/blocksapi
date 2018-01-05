@@ -4,7 +4,7 @@ import decimal
 import psycopg2
 from datetime import datetime
 from rawl import RawlBase, RawlJSONEncoder
-from .config import LOGGER
+from .config import LOGGER, DEFAULT_LIMIT, DEFAULT_OFFSET
 
 log = LOGGER.getChild('db')
 
@@ -41,10 +41,36 @@ class BlockModel(RawlBase):
 
         result = self.query(
             "SELECT MIN(block_no), MAX(block_no) FROM block"
-            " WHERE block_time BETWEEN {} AND {}",
+            " WHERE block_timestamp BETWEEN {} AND {}",
             start, end)
 
         return (result[0][0], result[0][1])
+
+    def get_range_date(self, start_time, end_time, limit=DEFAULT_LIMIT, 
+                       offset=DEFAULT_OFFSET) -> list:
+        """ Get a range of blocks between two numbers """
+
+        if start_time > end_time:
+            raise InvalidRange("start must come before end")
+
+        return self.select(
+            "SELECT {} FROM block"
+            " WHERE block_timestamp BETWEEN {} AND {}"
+            " ORDER BY block_number LIMIT {} OFFSET {}",
+            self.columns, start_time, end_time, limit, offset)
+
+    def get_range_number(self, start, end, limit=DEFAULT_LIMIT, 
+                       offset=DEFAULT_OFFSET) -> list:
+        """ Get a range of blocks between two numbers """
+
+        if start > end:
+            raise InvalidRange("start must come before end")
+
+        return self.select(
+            "SELECT {} FROM block"
+            " WHERE block_number BETWEEN {} AND {}"
+            " ORDER BY block_number LIMIT {} OFFSET {}",
+           self.columns,  start, end, limit, offset)
 
     def get_latest(self) -> int:
         """ Get the latest block in the DB """

@@ -24,6 +24,7 @@ setup(
     install_requires=[
         'rawl>=0.1.1b2',
         'tornado>=4.5.2',
+        'python-dateutil>=2.6.1',
     ],
     entry_points={
         'console_scripts': [

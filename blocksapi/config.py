@@ -13,6 +13,8 @@ from configparser import ConfigParser
 
 CONFIG = ConfigParser()
 
+DEFAULT_LIMIT = 50
+DEFAULT_OFFSET = 0
 CONFIG_INI = 'blocksapi.ini'
 
 user_conf = os.path.expanduser(os.path.join('~', '.config', CONFIG_INI))
