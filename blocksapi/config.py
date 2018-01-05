@@ -5,6 +5,8 @@ Example
 
     [default]
     dsn = postgresql://user:password@server.example.com/dbname
+    loglevel = INFO
+    page_limit = 200
 """
 import os
 import sys
@@ -13,8 +15,6 @@ from configparser import ConfigParser
 
 CONFIG = ConfigParser()
 
-DEFAULT_LIMIT = 50
-DEFAULT_OFFSET = 0
 CONFIG_INI = 'blocksapi.ini'
 
 user_conf = os.path.expanduser(os.path.join('~', '.config', CONFIG_INI))
@@ -43,5 +43,8 @@ LEVEL = {
 conf_loglevel = CONFIG['default'].get('loglevel')
 logging.basicConfig(stream=sys.stdout, level=LEVEL.get(conf_loglevel, 'WARNING'))
 LOGGER = logging.getLogger('blocks')
+
+DEFAULT_LIMIT = CONFIG['default'].getint('page_limit', 500)
+DEFAULT_OFFSET = 0
 
 DSN = CONFIG['default']['dsn']
