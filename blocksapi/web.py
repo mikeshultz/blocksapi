@@ -59,6 +59,7 @@ class BlockHandler(JsonHandler):
                 block_number = be_integer(self.request.arguments['block_number'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
+                return
             
             res = BLOCKS.get(block_number)
 
@@ -88,6 +89,7 @@ class BlockHandler(JsonHandler):
                     offset = int(self.request.arguments['page']) * DEFAULT_LIMIT
                 except ValueError:
                     self.write_error(400, message="Invalid page")
+                    return
             
             res = BLOCKS.get_range_number(start, end, offset=offset)
 
@@ -116,6 +118,7 @@ class BlockHandler(JsonHandler):
                     offset = int(self.request.arguments['page']) * DEFAULT_LIMIT
                 except ValueError:
                     self.write_error(400, message="Invalid page")
+                    return
 
             res = BLOCKS.get_range_date(start_time, end_time, offset=offset)
 
@@ -141,8 +144,17 @@ class TransactionHandler(JsonHandler):
                 tx_hash = be_hash(self.request.arguments['hash'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
+                return
+
+            offset = 0
+            if self.request.arguments.get('page'):
+                try:
+                    offset = int(self.request.arguments['page']) * DEFAULT_LIMIT
+                except ValueError:
+                    self.write_error(400, message="Invalid page")
+                    return
             
-            self.response['results'] = TRANSACTIONS.get(tx_hash)
+            self.response['results'] = TRANSACTIONS.get(tx_hash, offset=offset)
 
             self.write_json()
 
@@ -153,33 +165,84 @@ class TransactionHandler(JsonHandler):
                 block_number = be_integer(self.request.arguments['block_number'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
+                return
+
+            offset = 0
+            if self.request.arguments.get('page'):
+                try:
+                    offset = int(self.request.arguments['page']) * DEFAULT_LIMIT
+                except ValueError:
+                    self.write_error(400, message="Invalid page")
+                    return
             
-            self.response['results'] = TRANSACTIONS.get_block(block_number)
+            self.response['results'] = TRANSACTIONS.get_block(block_number, 
+                                                              offset=offset)
 
             self.write_json()
 
         # Transactions for an account
-        elif self.request.arguments.get('from_address') \
-            or self.request.arguments.get('to_address'):
+        elif self.request.arguments.get('from_address'):
 
             try:
                 if self.request.arguments.get('from_address'):
                     from_address = be_hash(self.request.arguments['from_address'])
+            except InvalidInput as e:
+                self.write_error(400, message=str(e))
+                return
+
+            offset = 0
+            if self.request.arguments.get('page'):
+                try:
+                    offset = int(self.request.arguments['page']) * DEFAULT_LIMIT
+                except ValueError:
+                    self.write_error(400, message="Invalid page")
+                    return
+
+            self.response['results'] = TRANSACTIONS.get_from(from_address)
+
+            self.write_json()
+
+        # Transactions for an account
+        elif self.request.arguments.get('to_address'):
+
+            try:
                 if self.request.arguments.get('to_address'):
                     to_address = be_hash(self.request.arguments['to_address'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
+                return
 
-            if from_address == to_address:
-                self.response['results'] = TRANSACTIONS.get_address(to_address)
-            else:
-                if from_address:
-                    self.response['results'].append(
-                        TRANSACTIONS.get_from(from_address))
+            offset = 0
+            if self.request.arguments.get('page'):
+                try:
+                    offset = int(self.request.arguments['page']) * DEFAULT_LIMIT
+                except ValueError:
+                    self.write_error(400, message="Invalid page")
+                    return
 
-                if to_address:
-                    self.response['results'].append(
-                        TRANSACTIONS.get_to(to_address))
+            self.response['results'] = TRANSACTIONS.get_to(to_address)
+
+            self.write_json()
+
+        # Transactions for an account
+        elif self.request.arguments.get('address'):
+
+            try:
+                if self.request.arguments.get('address'):
+                    address = be_hash(self.request.arguments['address'])
+            except InvalidInput as e:
+                self.write_error(400, message=str(e))
+                return
+
+            offset = 0
+            if self.request.arguments.get('page'):
+                try:
+                    offset = int(self.request.arguments['page']) * DEFAULT_LIMIT
+                except ValueError:
+                    self.write_error(400, message="Invalid page")
+                    return
+
+            self.response['results'] = TRANSACTIONS.get_addresses(address)
 
             self.write_json()
 
