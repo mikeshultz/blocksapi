@@ -22,7 +22,7 @@ setup(
     packages=find_packages(exclude=['build', 'dist']),
     #package_data={'': ['README.md', 'sql/initial.sql']},
     install_requires=[
-        'rawl>=0.1.1b2',
+        'rawl>=0.2.6b1',
         'tornado>=4.5.2',
         'python-dateutil>=2.6.1',
     ],
