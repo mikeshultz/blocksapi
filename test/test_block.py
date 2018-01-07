@@ -145,20 +145,20 @@ class TestBlock(object):
     def test_block_not_found(self, server):
         """ Test /block parameters that don't match """
 
-        FUTURE_BLOCK = 999999999
-        FUTURE_DATE1 = parse('3016-01-01 00:10:00').isoformat()
-        FUTURE_DATE2 = parse('4016-01-01 00:10:00').isoformat()
+        future_block = 999999999
+        future_date1 = parse('3016-01-01 00:10:00').isoformat()
+        future_date2 = parse('4016-01-01 00:10:00').isoformat()
 
         # Some theoretical future block_number that doesn't exist
-        req = self.make_call(server, { 'block_number': FUTURE_BLOCK })
+        req = self.make_call(server, { 'block_number': future_block })
         assert req.status_code == 404
 
         # Some theoretical future block_number that doesn't exist
-        req = self.make_call(server, { 'start': FUTURE_BLOCK, 'end': FUTURE_BLOCK+1 })
+        req = self.make_call(server, { 'start': future_block, 'end': future_block+1 })
         assert req.status_code == 404
 
         # Some theoretical future block_number that doesn't exist
-        req = self.make_call(server, { 'start_time': FUTURE_DATE1, 'end_time': FUTURE_DATE2 })
+        req = self.make_call(server, { 'start_time': future_date1, 'end_time': future_date2 })
         assert req.status_code == 404
 
 
