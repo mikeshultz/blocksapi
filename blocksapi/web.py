@@ -64,8 +64,11 @@ class BlockHandler(JsonHandler):
             
             res = BLOCKS.get(block_number)
 
-            # Format the hash field properly
-            res = results_hex_format(res, 'hash')
+            if len(res) == 0:
+                self.set_status(404)
+            else:
+                # Format the hash field properly
+                res = results_hex_format(res, 'hash')
 
             self.response['page'] = 1
             self.response['pages'] = 1
@@ -94,8 +97,11 @@ class BlockHandler(JsonHandler):
             
             res = BLOCKS.get_range_number(start, end, offset=offset)
 
-            # Format the hash field properly
-            res = results_hex_format(res, 'hash')
+            if len(res) == 0:
+                self.set_status(404)
+            else:
+                # Format the hash field properly
+                res = results_hex_format(res, 'hash')
 
             self.response['page'] = self.request.arguments.get('page', 1)
             self.response['results'] = res
@@ -123,8 +129,11 @@ class BlockHandler(JsonHandler):
 
             res = BLOCKS.get_range_date(start_time, end_time, offset=offset)
 
-            # Format the hash field properly
-            res = results_hex_format(res, 'hash')
+            if len(res) == 0:
+                self.set_status(404)
+            else:
+                # Format the hash field properly
+                res = results_hex_format(res, 'hash')
 
             self.response['page'] = self.request.arguments.get('page', 1)
             self.response['results'] = res
@@ -153,7 +162,10 @@ class TransactionHandler(JsonHandler):
             
             res = TRANSACTIONS.get(tx_hash)
 
-            res = results_hex_format(res, 'hash')
+            if len(res) == 0:
+                self.set_status(404)
+            else:
+                res = results_hex_format(res, 'hash')
 
             self.response['results'] = res
 
@@ -176,8 +188,14 @@ class TransactionHandler(JsonHandler):
                     self.write_error(400, message="Invalid page")
                     return
             
-            self.response['results'] = TRANSACTIONS.get_block(block_number, 
-                                                              offset=offset)
+            res = TRANSACTIONS.get_block(block_number, offset=offset)
+
+            if len(res) == 0:
+                self.set_status(404)
+            else:
+                res = results_hex_format(res, 'hash')
+
+            self.response['results'] = res
 
             self.write_json()
 
@@ -199,7 +217,14 @@ class TransactionHandler(JsonHandler):
                     self.write_error(400, message="Invalid page")
                     return
 
-            self.response['results'] = TRANSACTIONS.get_from(from_address)
+            res = TRANSACTIONS.get_from(from_address)
+
+            if len(res) == 0:
+                self.set_status(404)
+            else:
+                res = results_hex_format(res, 'hash')
+
+            self.response['results'] = res
 
             self.write_json()
 
@@ -221,7 +246,14 @@ class TransactionHandler(JsonHandler):
                     self.write_error(400, message="Invalid page")
                     return
 
-            self.response['results'] = TRANSACTIONS.get_to(to_address)
+            res = TRANSACTIONS.get_to(to_address)
+
+            if len(res) == 0:
+                self.set_status(404)
+            else:
+                res = results_hex_format(res, 'hash')
+
+            self.response['results'] = res
 
             self.write_json()
 
@@ -243,7 +275,14 @@ class TransactionHandler(JsonHandler):
                     self.write_error(400, message="Invalid page")
                     return
 
-            self.response['results'] = TRANSACTIONS.get_by_address(address)
+            res = TRANSACTIONS.get_by_address(address)
+
+            if len(res) == 0:
+                self.set_status(404)
+            else:
+                res = results_hex_format(res, 'hash')
+
+            self.response['results'] = res
 
             self.write_json()
 
