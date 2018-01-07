@@ -123,7 +123,7 @@ class TestBlock(object):
         req = self.make_call(server, { 'start_time': start_time })
         assert req.status_code == 400
 
-        req = self.make_call(server, { 'start_time': start_time, end: 3000000 })
+        req = self.make_call(server, { 'start_time': start_time, 'end': 3000000 })
         assert req.status_code == 400
 
         req = self.make_call(server, { 'nothing': start_time, 'something': end_time })
@@ -158,7 +158,7 @@ class TestBlock(object):
         assert req.status_code == 404
 
         # Some theoretical future block_number that doesn't exist
-        req = self.make_call(server, { 'start_date': FUTURE_DATE1, 'end_date': FUTURE_DATE2 })
+        req = self.make_call(server, { 'start_time': FUTURE_DATE1, 'end_time': FUTURE_DATE2 })
         assert req.status_code == 404
 
 
