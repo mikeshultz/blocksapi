@@ -5,6 +5,11 @@ def pg_varchar_to_hex(h):
         return "0x" + h[2:]
     return h
 
+def has_to_pg_varchar(h):
+    if h[:2] == "0x":
+        return "\\x" + h[2:]
+    return h
+
 def results_hex_format(results, field):
     """ Update the results of list of RawlResults to fix a hash that was stored
         in postgres' weird way of storing hex as varchar

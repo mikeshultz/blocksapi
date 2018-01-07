@@ -88,7 +88,7 @@ class TransactionModel(RawlBase):
                      'value', 'gas_price', 'gas_limit', 'nonce', 'input'],
             pk_name='hash')
 
-    def get_by_address(self, address: str) -> list:
+    def get_by_address(self, address:str, limit:int=10) -> list:
         """ Get a list of transactions for an address """
 
         if not is_address(address):
@@ -96,8 +96,9 @@ class TransactionModel(RawlBase):
 
         result = self.select(
             "SELECT {} FROM transaction"
-            " WHERE from_address = {} OR to_address = {};",
-            self.columns, address, address)
+            " WHERE from_address = {} OR to_address = {}"
+            " ORDER BY block_timestamp DESC LIMIT {} OFFSET {};",
+            self.columns, address, address, limit, offset)
 
         return result
 

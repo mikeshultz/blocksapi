@@ -6,7 +6,7 @@ import tornado.web
 from .config import DSN, DEFAULT_LIMIT
 from .db import JSONEncoder, BlockModel, TransactionModel
 from .validate import InvalidInput, be_integer, be_hash, be_datetime
-from .utils import results_hex_format
+from .utils import results_hex_format, has_to_pg_varchar
 
 BLOCKS = BlockModel(DSN)
 TRANSACTIONS = TransactionModel(DSN)
@@ -146,15 +146,15 @@ class TransactionHandler(JsonHandler):
                 self.write_error(400, message=str(e))
                 return
 
-            offset = 0
-            if self.request.arguments.get('page'):
-                try:
-                    offset = int(self.request.arguments['page']) * DEFAULT_LIMIT
-                except ValueError:
-                    self.write_error(400, message="Invalid page")
-                    return
+            # Garbage due to weird storage in DB.  TODO Fix this
+            if tx_hash[:2] == "0x":
+                tx_hash = has_to_pg_varchar(tx_hash)
             
-            self.response['results'] = TRANSACTIONS.get(tx_hash, offset=offset)
+            res = TRANSACTIONS.get(tx_hash)
+
+            res = results_hex_format(res, 'hash')
+
+            self.response['results'] = res
 
             self.write_json()
 
