@@ -257,9 +257,9 @@ class Application(tornado.web.Application):
         ]
         tornado.web.Application.__init__(self, handlers)
 
-def main():
+def main(port=8080):
     app = Application()
-    app.listen(8080)
+    app.listen(port)
     IOLoop.instance().start()
 
 if __name__ == '__main__':
