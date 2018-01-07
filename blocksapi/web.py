@@ -3,6 +3,7 @@ from tornado import httpserver
 from tornado import gen
 from tornado.ioloop import IOLoop
 import tornado.web
+from eth_utils.address import is_address
 from .config import DSN, DEFAULT_LIMIT
 from .db import JSONEncoder, BlockModel, TransactionModel
 from .validate import InvalidInput, be_integer, be_hash, be_datetime
@@ -242,7 +243,7 @@ class TransactionHandler(JsonHandler):
                     self.write_error(400, message="Invalid page")
                     return
 
-            self.response['results'] = TRANSACTIONS.get_addresses(address)
+            self.response['results'] = TRANSACTIONS.get_by_address(address)
 
             self.write_json()
 

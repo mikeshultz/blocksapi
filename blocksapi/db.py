@@ -3,7 +3,9 @@ import logging
 import decimal
 import psycopg2
 from datetime import datetime
+from eth_utils.address import is_address
 from rawl import RawlBase, RawlJSONEncoder
+from .utils import results_hex_format, has_to_pg_varchar
 from .config import LOGGER, DEFAULT_LIMIT, DEFAULT_OFFSET
 
 log = LOGGER.getChild('db')
@@ -87,18 +89,71 @@ class TransactionModel(RawlBase):
             columns=['hash', 'block_number', 'from_address', 'to_address',
                      'value', 'gas_price', 'gas_limit', 'nonce', 'input'],
             pk_name='hash')
+        # Deal with 'hash' column being in both tables
+        self.aliased_columns = ['t.' + x for x in self.columns]
 
-    def get_by_address(self, address:str, limit:int=10) -> list:
+    def get_by_address(self, address:str, limit:int=DEFAULT_LIMIT,
+                       offset:int=DEFAULT_OFFSET) -> list:
         """ Get a list of transactions for an address """
 
         if not is_address(address):
             raise ValueError("Address is invalid")
 
         result = self.select(
-            "SELECT {} FROM transaction"
+            "SELECT {} FROM transaction t JOIN block b USING (block_number)"
             " WHERE from_address = {} OR to_address = {}"
             " ORDER BY block_timestamp DESC LIMIT {} OFFSET {};",
-            self.columns, address, address, limit, offset)
+            self.aliased_columns, address, address, limit, offset)
+
+        result = results_hex_format(result, 'hash')
+
+        return result
+
+    def get_from(self, address:str, limit:int=DEFAULT_LIMIT,
+                 offset:int=DEFAULT_OFFSET) -> list:
+        """ Get a list of transactions for an address """
+
+        if not is_address(address):
+            raise ValueError("Address is invalid")
+
+        result = self.select(
+            "SELECT {} FROM transaction t JOIN block b USING (block_number)"
+            " WHERE from_address = {}"
+            " ORDER BY block_timestamp DESC LIMIT {} OFFSET {};",
+            self.aliased_columns, address, limit, offset)
+
+        result = results_hex_format(result, 'hash')
+
+        return result
+
+    def get_to(self, address:str, limit:int=DEFAULT_LIMIT,
+                 offset:int=DEFAULT_OFFSET) -> list:
+        """ Get a list of transactions for an address """
+
+        if not is_address(address):
+            raise ValueError("Address is invalid")
+
+        result = self.select(
+            "SELECT {} FROM transaction t JOIN block b USING (block_number)"
+            " WHERE to_address = {}"
+            " ORDER BY block_timestamp DESC LIMIT {} OFFSET {};",
+            self.aliased_columns, address, limit, offset)
+
+        result = results_hex_format(result, 'hash')
+
+        return result
+
+    def get_block(self, block_number:int, limit:int=DEFAULT_LIMIT,
+                  offset:int=DEFAULT_OFFSET) -> list:
+        """ Get transactions in a block """
+
+        result = self.select(
+            "SELECT {} FROM transaction t JOIN block b USING (block_number)"
+            " WHERE block_number = {}"
+            " ORDER BY block_timestamp DESC LIMIT {} OFFSET {};",
+            self.aliased_columns, block_number, limit, offset)
+
+        result = results_hex_format(result, 'hash')
 
         return result
 

@@ -25,6 +25,7 @@ setup(
         'rawl>=0.2.6b1',
         'tornado>=4.5.2',
         'python-dateutil>=2.6.1',
+        'eth-utils>=0.7.4',
     ],
     entry_points={
         'console_scripts': [
