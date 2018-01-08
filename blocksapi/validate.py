@@ -2,6 +2,7 @@
 import re
 from datetime import datetime
 from dateutil.parser import parse as parse_date
+from eth_utils.address import is_address, to_normalized_address
 
 
 class InvalidInput(ValueError):
@@ -37,11 +38,25 @@ def be_hash(v):
     if not re.match(r'^(0x)?[A-Fa-f0-9]+$', v):
         raise InvalidInput("String is not a hash")
 
+    if len(v) not in (64,66):
+        raise InvalidInput("Hash is an invalid length")
+
     # Add the prefix if it doesn't have it
     if v[:2] != '0x':
         return '0x' + v
     else:
         return v
+
+def be_address(v):
+    """ Make sure v is an Ethereum address """
+    
+    v = be_string(v)
+
+    if not is_address(v):
+        raise InvalidInput("Address is invalid")
+
+    # Add the prefix if it doesn't have it
+    return to_normalized_address(v)
 
 def be_datetime(v):
     """ Make sure v is a date """

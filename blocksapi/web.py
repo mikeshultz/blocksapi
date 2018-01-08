@@ -6,7 +6,7 @@ import tornado.web
 from eth_utils.address import is_address
 from .config import DSN, DEFAULT_LIMIT
 from .db import JSONEncoder, BlockModel, TransactionModel
-from .validate import InvalidInput, be_integer, be_hash, be_datetime
+from .validate import InvalidInput, be_integer, be_hash, be_datetime, be_address
 from .utils import results_hex_format, has_to_pg_varchar
 
 BLOCKS = BlockModel(DSN)
@@ -204,7 +204,7 @@ class TransactionHandler(JsonHandler):
 
             try:
                 if self.request.arguments.get('from_address'):
-                    from_address = be_hash(self.request.arguments['from_address'])
+                    from_address = be_address(self.request.arguments['from_address'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
                 return
@@ -233,7 +233,7 @@ class TransactionHandler(JsonHandler):
 
             try:
                 if self.request.arguments.get('to_address'):
-                    to_address = be_hash(self.request.arguments['to_address'])
+                    to_address = be_address(self.request.arguments['to_address'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
                 return
@@ -262,7 +262,7 @@ class TransactionHandler(JsonHandler):
 
             try:
                 if self.request.arguments.get('address'):
-                    address = be_hash(self.request.arguments['address'])
+                    address = be_address(self.request.arguments['address'])
             except InvalidInput as e:
                 self.write_error(400, message=str(e))
                 return

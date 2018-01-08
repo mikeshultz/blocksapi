@@ -101,7 +101,8 @@ class TransactionModel(RawlBase):
 
         result = self.select(
             "SELECT {} FROM transaction t JOIN block b USING (block_number)"
-            " WHERE from_address = {} OR to_address = {}"
+            " WHERE lower(from_address) = lower({})"
+            " OR lower(to_address) = lower({})"
             " ORDER BY block_timestamp DESC LIMIT {} OFFSET {};",
             self.aliased_columns, address, address, limit, offset)
 
@@ -118,7 +119,7 @@ class TransactionModel(RawlBase):
 
         result = self.select(
             "SELECT {} FROM transaction t JOIN block b USING (block_number)"
-            " WHERE from_address = {}"
+            " WHERE lower(from_address) = lower({})"
             " ORDER BY block_timestamp DESC LIMIT {} OFFSET {};",
             self.aliased_columns, address, limit, offset)
 
@@ -135,7 +136,7 @@ class TransactionModel(RawlBase):
 
         result = self.select(
             "SELECT {} FROM transaction t JOIN block b USING (block_number)"
-            " WHERE to_address = {}"
+            " WHERE lower(to_address) = lower({})"
             " ORDER BY block_timestamp DESC LIMIT {} OFFSET {};",
             self.aliased_columns, address, limit, offset)
 

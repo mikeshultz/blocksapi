@@ -66,8 +66,8 @@ class TestTransaction(object):
         # Make sure values look good
         assert resp['results'][0]['hash'] == '0x5c504ed432cb51138bcf09aa5e8a410dd4a1e204ef84bfed1be16dfba1b22060'
         assert resp['results'][0]['block_number'] == 46147
-        assert resp['results'][0]['from_address'] == '0xa1e4380a3b1f749673e270229993ee55f35663b4'
-        assert resp['results'][0]['to_address'] == '0x5df9b87991262f6ba471f09758cde1c0fc1de734'
+        assert resp['results'][0]['from_address'].lower() == '0xa1e4380a3b1f749673e270229993ee55f35663b4'
+        assert resp['results'][0]['to_address'].lower() == '0x5df9b87991262f6ba471f09758cde1c0fc1de734'
         assert resp['results'][0]['value'] == 31337
         assert resp['results'][0]['gas_price'] == 50000000000000
         assert resp['results'][0]['gas_limit'] == 21000
