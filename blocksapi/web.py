@@ -51,7 +51,7 @@ class MainHandler(JsonHandler):
         self.redirect('https://gointo.software/')
 
 class BlockHandler(JsonHandler):
-    def get(self):
+    def post(self):
 
         # Single block request
         if self.request.arguments.get('block_number'):
@@ -145,7 +145,7 @@ class BlockHandler(JsonHandler):
 
 
 class TransactionHandler(JsonHandler):
-    def get(self):
+    def post(self):
         
         # Single transaction request
         if self.request.arguments.get('hash'):

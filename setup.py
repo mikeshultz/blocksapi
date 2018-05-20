@@ -26,6 +26,7 @@ setup(
         'tornado>=4.5.2',
         'python-dateutil>=2.6.1',
         #'uwsgi>=2.0.15',
+        'pycryptodome>=3.6.1',
         'eth-hash==0.1.3', # Bug in 0.1.3 install
         'eth_utils>=1.0.3',
     ],
