@@ -25,7 +25,18 @@ setup(
         'rawl>=0.2.6b1',
         'tornado>=4.5.2',
         'python-dateutil>=2.6.1',
-        'eth-utils>=0.7.4',
+        #'uwsgi>=2.0.15',
+        'eth-hash==0.1.3', # Bug in 0.1.3 install
+        'eth_utils>=1.0.3',
+    ],
+    # Every damned Ethereum python package in PyPi seems afflicted with a pypandoc
+    # related issue.  For some reason, their releases on github work just fine, so
+    # for now, we use these:
+    dependency_links=[
+        #'https://github.com/carver/hexbytes/archive/v0.1.0.tar.gz#egg=hexbytes',
+        'https://github.com/ethereum/eth-hash/archive/v0.1.3.tar.gz#egg=eth-hash-0.1.3',
+        #'https://github.com/ethereum/eth-account/archive/v0.2.2.tar.gz#egg=eth-account-0.2.2',
+        #'https://github.com/ethereum/eth-rlp/archive/v0.1.2.tar.gz#egg=eth-rlp-0.1.2',
     ],
     entry_points={
         'console_scripts': [
