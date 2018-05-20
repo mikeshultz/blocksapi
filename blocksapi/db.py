@@ -25,7 +25,13 @@ class JSONEncoder(RawlJSONEncoder):
                 return float(o)
             else:
                 return int(o)
-        return super(JSONEncoder, self).default(o)
+        try:
+            return super(JSONEncoder, self).default(o)
+        except TypeError as e:
+            if 'is not JSON' in str(e):
+                return str(o)
+            else:
+                return super(JSONEncoder, self).default(o)
 
 
 class BlockModel(RawlBase):
