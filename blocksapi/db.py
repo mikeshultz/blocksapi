@@ -83,7 +83,7 @@ class BlockModel(RawlBase):
     def get_latest(self) -> int:
         """ Get the latest block in the DB """
 
-        res = self.query("SELECT MAX(block_no) FROM block;")
+        res = self.query("SELECT MAX(block_number) FROM block;")
         if res is not None:
             return res[0][0]
         else:

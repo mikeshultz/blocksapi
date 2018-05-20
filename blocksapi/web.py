@@ -50,6 +50,13 @@ class MainHandler(JsonHandler):
     def get(self):
         self.redirect('https://gointo.software/')
 
+class HealthHandler(JsonHandler):
+    def get(self):
+        max_block = BLOCKS.get_latest()
+        self.response['message'] = 'ok'
+        self.response['blockNumber'] = max_block
+        self.write_json()
+
 class BlockHandler(JsonHandler):
     def post(self):
 
@@ -292,11 +299,13 @@ class Application(tornado.web.Application):
         handlers = [
             (r"/block/?", BlockHandler),
             (r"/transaction/?", TransactionHandler),
+            (r"/health/?", HealthHandler),
             (r"/?", MainHandler),
         ]
         tornado.web.Application.__init__(self, handlers)
 
 def main(port=8081):
+    print("Starting server on port {}".format(port))
     app = Application()
     app.listen(port)
     IOLoop.instance().start()

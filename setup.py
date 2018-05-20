@@ -6,7 +6,7 @@ __DIR__ = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name='blocksapi',
-    version='0.0.1b1',
+    version='0.0.2b1',
     description='Blocks API',
     url='https://github.com/mikeshultz/blocksapi',
     author='Mike Shultz',
