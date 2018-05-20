@@ -29,8 +29,19 @@ if 'default' not in CONFIG:
     raise Exception("No configuration found")
 
 # Validate
-if not CONFIG['default'].get('dsn'):
-    raise Exception("Invalid configuration")
+if CONFIG['default'].get('dsn'):
+    DSN = CONFIG['default']['dsn']
+else:
+    if not CONFIG['postgresql'].get('user'):
+        raise Exception("Missing database configuration")
+        
+    DSN = "postgresql://%s:%s@%s:%s/%s" % (
+        CONFIG['postgresql']['user'],
+        CONFIG['postgresql']['pass'],
+        CONFIG['postgresql'].get('host', "localhost"),
+        CONFIG['postgresql'].get('port', 5432),
+        CONFIG['postgresql'].get('name', "blocks")
+        )
 
 # Log level can be gotten from here: 
 LEVEL = {
@@ -46,5 +57,3 @@ LOGGER = logging.getLogger('blocks')
 
 DEFAULT_LIMIT = CONFIG['default'].getint('page_limit', 500)
 DEFAULT_OFFSET = 0
-
-DSN = CONFIG['default']['dsn']
