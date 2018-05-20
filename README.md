@@ -2,6 +2,18 @@
 
 RESTful API for unusual and uncommon blockchain queries.
 
+## Install
+
+    python setup.py install
+
+## Usage
+
+    blocksapi
+
+## Docker Build & Deploy
+
+    ./deploy.sh v0.0.1b3
+
 ## API
 
 All API endpoints are prefixed by the version number.  For instance, a call to
