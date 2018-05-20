@@ -34,8 +34,8 @@ class JsonHandler(tornado.web.RequestHandler):
     def write_error(self, status_code, **kwargs):
         if 'message' not in kwargs:
             kwargs['message'] = 'Unknown error.'
-        if 'exec_info' in kwargs:
-            print(kwargs.pop('exec_info'))
+        if 'exc_info' in kwargs:
+            print(kwargs.pop('exc_info'))
 
         self.set_status(status_code)
         self.response = kwargs
@@ -296,7 +296,7 @@ class Application(tornado.web.Application):
         ]
         tornado.web.Application.__init__(self, handlers)
 
-def main(port=8080):
+def main(port=8081):
     app = Application()
     app.listen(port)
     IOLoop.instance().start()
