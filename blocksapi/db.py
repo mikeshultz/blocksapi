@@ -172,3 +172,29 @@ class TransactionModel(RawlBase):
             return res[0][0]
         else:
             return 0
+
+    def get_mean_gas_price(self, block_length) -> int:
+        """ Get the mean gas price for the last X transactions """
+
+        res = self.query(
+            "WITH gas_prices AS "
+            " (SELECT gas_price FROM transaction ORDER BY block_number DESC LIMIT {})"
+            " SELECT MAX(gas_price), MIN(gas_price) FROM gas_prices;",
+            block_length)
+        if res is not None:
+            return res[0][0] - res[0][1]
+        else:
+            return 0
+
+    def get_average_gas_price(self, block_length) -> int:
+        """ Get the average gas price for the last X transactions """
+
+        res = self.query(
+            "WITH gas_prices AS "
+            " (SELECT gas_price FROM transaction ORDER BY block_number DESC LIMIT {})"
+            " SELECT avg(gas_price) AS average FROM gas_prices;",
+            block_length)
+        if res is not None:
+            return res[0][0]
+        else:
+            return 0

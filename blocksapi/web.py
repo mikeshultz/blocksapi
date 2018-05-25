@@ -6,8 +6,16 @@ import tornado.web
 from eth_utils.address import is_address
 from .config import DSN, DEFAULT_LIMIT
 from .db import JSONEncoder, BlockModel, TransactionModel
-from .validate import InvalidInput, be_integer, be_hash, be_datetime, be_address
+from .validate import (
+    InvalidInput,
+    be_integer,
+    be_hash,
+    be_datetime,
+    be_address,
+    be_string,
+)
 from .utils import results_hex_format, has_to_pg_varchar
+from .docs import JSON_SCHEMA
 
 BLOCKS = BlockModel(DSN)
 TRANSACTIONS = TransactionModel(DSN)
@@ -30,6 +38,8 @@ class JsonHandler(tornado.web.RequestHandler):
 
     def set_default_headers(self):
         self.set_header('Content-Type', 'application/json')
+        self.set_header('Access-Control-Allow-Origin', '*')
+        self.set_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
 
     def write_error(self, status_code, **kwargs):
         if 'message' not in kwargs:
@@ -48,7 +58,8 @@ class JsonHandler(tornado.web.RequestHandler):
 
 class MainHandler(JsonHandler):
     def get(self):
-        self.redirect('https://gointo.software/')
+        self.response['endpoints'] = JSON_SCHEMA
+        self.write_json()
 
 class HealthHandler(JsonHandler):
     def get(self):
@@ -294,9 +305,34 @@ class TransactionHandler(JsonHandler):
             self.write_json()
 
 
+class GasPriceHandler(JsonHandler):
+    def post(self):
+        
+        try:
+            calc_type = be_string(self.request.arguments['type'])
+        except InvalidInput as e:
+            self.write_error(400, message=str(e))
+            return
+
+        try:
+            block_length = be_integer(self.request.arguments.get('block_length'))
+        except InvalidInput as e:
+            block_length = 500
+
+        if calc_type == 'mean':
+            res = TRANSACTIONS.get_mean_gas_price(block_length)
+        else:
+            res = TRANSACTIONS.get_average_gas_price(block_length)
+
+        self.response['results'] = int(res)
+
+        self.write_json()
+
+
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
+            (r"/gas-price/?", GasPriceHandler),
             (r"/block/?", BlockHandler),
             (r"/transaction/?", TransactionHandler),
             (r"/health/?", HealthHandler),
