@@ -53,8 +53,14 @@ JSON_SCHEMA = [
             "title": "Response",
             "type": "object",
             "properties": {
-                "message": "string",
-                "block_number": "integer"
+                "message": {
+                    "type": "string",
+                    "description": "A description of the health of the API.  Good: 'ok'"
+                },
+                "block_number": {
+                    "type": "integer",
+                    "description": "The current max block the API knows about."
+                }
             },
             "required": ["message", "block_number"]
         }
@@ -78,13 +84,15 @@ JSON_SCHEMA = [
                     "type": "number",
                     "description": "The ending block number of the range. (Required when start is provided)",
                 },
-                "start": {
-                    "type": "number",
-                    "description": "The start time of the range"
+                "start_time": {
+                    "format": "date-time",
+                    "type": "string",
+                    "description": "The start date time of the range"
                 },
-                "end": {
-                    "type": "number",
-                    "description": "The ending time of the range. (Required when start_time is provided)",
+                "end_time": {
+                    "format": "date-time",
+                    "type": "string",
+                    "description": "The ending date time of the range. (Required when start_time is provided)",
                 }
             },
             "required": []
@@ -99,7 +107,7 @@ JSON_SCHEMA = [
                 "pages": {
                     "type": "number",
                 },
-                "result": {
+                "results": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -108,15 +116,16 @@ JSON_SCHEMA = [
                                 "type": "number"
                             },
                             "block_timestamp": {
-                                "type": "number",
+                                "format": "date-time",
+                                "type": "string",
                                 "description": "A UTC ISO format timestamp"
                             },
                             "hash": {
-                                "type": "number",
+                                "type": "string",
                                 "description": "The block hash as a hex string"
                             },
                             "miner": {
-                                "type": "number",
+                                "type": "string",
                                 "description": "The address of the account that mined this block"
                             },
                             "nonce": {
@@ -170,19 +179,19 @@ JSON_SCHEMA = [
                     "description": "The block the tx was mined in."
                 },
                 "hash": {
-                    "type": "number",
+                    "type": "string",
                     "description": "The transaction hash."
                 },
                 "from_address": {
-                    "type": "number",
+                    "type": "string",
                     "description": "The address the transaction was sent from."
                 },
                 "to_address": {
-                    "type": "number",
+                    "type": "string",
                     "description": "The address the transaction was sent to.",
                 },
                 "address": {
-                    "type": "number",
+                    "type": "string",
                     "description": "The address the transaction was sent from or to."
                 }
             },
@@ -193,12 +202,14 @@ JSON_SCHEMA = [
             "type": "object",
             "properties": {
                 "page": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "The page number currently being served."
                 },
                 "pages": {
                     "type": "number",
+                    "description": "The total pages available."
                 },
-                "result": {
+                "results": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -256,5 +267,35 @@ JSON_SCHEMA = [
             },
             "required": ["page", "pages", "result"]
         }
-    }
+    },
+    {
+        "uri": "/gas-price",
+        "method": "GET",
+        "description": "Get details and estimates on the current gas prices",
+        "request": {
+            "title": "Request",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "The type of calculation to do.  Options: average, mean"
+                },
+                "block_length": {
+                    "type": "number",
+                    "description": "How many previous blocks to use in the calculation."
+                }
+            }
+        },
+        "response": {
+            "title": "Response",
+            "type": "object",
+            "properties": {
+                "results": {
+                    "type": "number",
+                    "description": "The gas price in wei",
+                }
+            },
+            "required": ["results"]
+        }
+    },
 ]

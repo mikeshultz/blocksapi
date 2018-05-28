@@ -43,6 +43,19 @@ else:
         CONFIG['postgresql'].get('name', "blocks")
         )
 
+try:
+    REDIS = {
+        "host": CONFIG['redis'].get('host', 'localhost'),
+        "port": CONFIG['redis'].get('port', 6379)
+    }
+except KeyError:
+    REDIS = {
+        "host": 'localhost',
+        "port": 6379
+    }
+RATE_LIMITER_EXPIRY = 300 # 5 minutes
+RATE_LIMIT = RATE_LIMITER_EXPIRY # 1 request per second
+
 # Log level can be gotten from here: 
 LEVEL = {
     'CRITICAL': 50,
@@ -52,8 +65,10 @@ LEVEL = {
     'DEBUG':    10
 }
 conf_loglevel = CONFIG['default'].get('loglevel')
+print("Log level {}".format(conf_loglevel))
 logging.basicConfig(stream=sys.stdout, level=LEVEL.get(conf_loglevel, 'WARNING'))
 LOGGER = logging.getLogger('blocks')
+log = LOGGER.getChild('config')
 
 DEFAULT_LIMIT = CONFIG['default'].getint('page_limit', 500)
 DEFAULT_OFFSET = 0

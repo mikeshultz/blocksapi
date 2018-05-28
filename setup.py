@@ -6,7 +6,7 @@ __DIR__ = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name='blocksapi',
-    version='0.0.4b1',
+    version='0.0.5b8',
     description='Blocks API',
     url='https://github.com/mikeshultz/blocksapi',
     author='Mike Shultz',
@@ -24,6 +24,7 @@ setup(
     install_requires=[
         'rawl>=0.2.6b1',
         'tornado>=4.5.2',
+        'redis>=2.10.6',
         'python-dateutil>=2.6.1',
         #'uwsgi>=2.0.15',
         'pycryptodome>=3.6.1',

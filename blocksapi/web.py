@@ -4,7 +4,7 @@ from tornado import gen
 from tornado.ioloop import IOLoop
 import tornado.web
 from eth_utils.address import is_address
-from .config import DSN, DEFAULT_LIMIT
+from .config import DSN, DEFAULT_LIMIT, LOGGER
 from .db import JSONEncoder, BlockModel, TransactionModel
 from .validate import (
     InvalidInput,
@@ -16,14 +16,31 @@ from .validate import (
 )
 from .utils import results_hex_format, has_to_pg_varchar
 from .docs import JSON_SCHEMA
+from .ratelimiter import IPLimiter
 
 BLOCKS = BlockModel(DSN)
 TRANSACTIONS = TransactionModel(DSN)
+log = LOGGER.getChild('web')
 
 
 class JsonHandler(tornado.web.RequestHandler):
     """Request handler where requests and responses speak JSON."""
+    def __init__(self, *args, **kwargs):
+        super(JsonHandler, self).__init__(*args, **kwargs)
+        self.limiter = IPLimiter()
+        
     def prepare(self):
+        # Init the limiter if needed
+        if not self.limiter:
+            self.limiter = IPLimiter()
+        # Handle rate limiting if the subsystem is available
+        if self.limiter and self.request.remote_ip:
+            allow = self.limiter.request(self.request.remote_ip)
+            if not allow:
+                log.warning("Request rate limited from {}".format(self.request.remote_ip))
+                self.send_error(429, message="Request has been rate limited")
+                return
+
         # Incorporate request JSON into arguments dictionary.
         if self.request.body:
             try:
