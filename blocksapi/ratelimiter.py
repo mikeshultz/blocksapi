@@ -12,7 +12,7 @@ class IPLimiter(object):
 
     def request(self, ip):
         """ Signal a request and return True if they're allowed """
-        store_key = "{}_{}".format(ip, datetime.now().strftime('%Y%m%d'))
+        store_key = "{}_{}".format(ip, datetime.utcnow().strftime('%Y%m%d'))
         
         # Get the count
         count = self.store.get(store_key)
@@ -31,7 +31,10 @@ class IPLimiter(object):
             by approximately as long as it takes to process this request since 
             the TTL is being set with the ttl value we got when we started.
         """
-        self.store.psetex(store_key, ttl or (RATE_LIMITER_EXPIRY * 1000), count)
+        if ttl < 1:
+            ttl = RATE_LIMITER_EXPIRY * 1000
+
+        self.store.psetex(store_key, ttl, count)
 
         # Is the request still allowed and under limit?
         if count <= RATE_LIMIT:
