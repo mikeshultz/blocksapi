@@ -166,136 +166,136 @@ JSON_SCHEMA = [
             "required": ["page", "pages", "result"]
         }
     },
-    {
-        "uri": "/transaction",
-        "method": "POST",
-        "description": "Query for transactions",
-        "request": {
-            "title": "Request",
-            "type": "object",
-            "properties": {
-                "block_number": {
-                    "type": "number",
-                    "description": "The block the tx was mined in."
-                },
-                "hash": {
-                    "type": "string",
-                    "description": "The transaction hash."
-                },
-                "from_address": {
-                    "type": "string",
-                    "description": "The address the transaction was sent from."
-                },
-                "to_address": {
-                    "type": "string",
-                    "description": "The address the transaction was sent to.",
-                },
-                "address": {
-                    "type": "string",
-                    "description": "The address the transaction was sent from or to."
-                }
-            },
-            "required": []
-        },
-        "response": {
-            "title": "Response",
-            "type": "object",
-            "properties": {
-                "page": {
-                    "type": "number",
-                    "description": "The page number currently being served."
-                },
-                "pages": {
-                    "type": "number",
-                    "description": "The total pages available."
-                },
-                "results": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "hash": {
-                                "type": "string",
-                                "description": "The sha3 hash of the transaction."
-                            },
-                            "block_number": {
-                                "type": "number",
-                                "description": "The block the tx was mined in."
-                            },
-                            "from_address": {
-                                "type": "string",
-                                "description": "The address of the acount that signed the tx."
-                            },
-                            "to_address": {
-                                "type": "string",
-                                "description": "The destination account or contract for the tx."
-                            },
-                            "value": {
-                                "type": "number",
-                                "description": "The amount of wei sent."
-                            },
-                            "gas_price": {
-                                "type": "number",
-                                "description": "The gas price in wei."
-                            },
-                            "gas_limit": {
-                                "type": "number",
-                                "description": "The gas limit for the transaction."
-                            },
-                            "nonce": {
-                                "type": "number",
-                                "description": "The nonce for the transaction."
-                            },
-                            "input": {
-                                "type": "string",
-                                "description": "The input data for the tx."
-                            }
-                        },
-                        "required": [
-                            "hash",
-                            "block_number",
-                            "from_address",
-                            "to_address",
-                            "value",
-                            "gas_price",
-                            "gas_limit",
-                            "nonce",
-                            "input"
-                        ]
-                    }
-                }
-            },
-            "required": ["page", "pages", "result"]
-        }
-    },
-    {
-        "uri": "/gas-price",
-        "method": "GET",
-        "description": "Get details and estimates on the current gas prices",
-        "request": {
-            "title": "Request",
-            "type": "object",
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "description": "The type of calculation to do.  Options: average, mean"
-                },
-                "block_length": {
-                    "type": "number",
-                    "description": "How many previous blocks to use in the calculation."
-                }
-            }
-        },
-        "response": {
-            "title": "Response",
-            "type": "object",
-            "properties": {
-                "results": {
-                    "type": "number",
-                    "description": "The gas price in wei",
-                }
-            },
-            "required": ["results"]
-        }
-    },
+    # {
+    #     "uri": "/transaction",
+    #     "method": "POST",
+    #     "description": "Query for transactions",
+    #     "request": {
+    #         "title": "Request",
+    #         "type": "object",
+    #         "properties": {
+    #             "block_number": {
+    #                 "type": "number",
+    #                 "description": "The block the tx was mined in."
+    #             },
+    #             "hash": {
+    #                 "type": "string",
+    #                 "description": "The transaction hash."
+    #             },
+    #             "from_address": {
+    #                 "type": "string",
+    #                 "description": "The address the transaction was sent from."
+    #             },
+    #             "to_address": {
+    #                 "type": "string",
+    #                 "description": "The address the transaction was sent to.",
+    #             },
+    #             "address": {
+    #                 "type": "string",
+    #                 "description": "The address the transaction was sent from or to."
+    #             }
+    #         },
+    #         "required": []
+    #     },
+    #     "response": {
+    #         "title": "Response",
+    #         "type": "object",
+    #         "properties": {
+    #             "page": {
+    #                 "type": "number",
+    #                 "description": "The page number currently being served."
+    #             },
+    #             "pages": {
+    #                 "type": "number",
+    #                 "description": "The total pages available."
+    #             },
+    #             "results": {
+    #                 "type": "array",
+    #                 "items": {
+    #                     "type": "object",
+    #                     "properties": {
+    #                         "hash": {
+    #                             "type": "string",
+    #                             "description": "The sha3 hash of the transaction."
+    #                         },
+    #                         "block_number": {
+    #                             "type": "number",
+    #                             "description": "The block the tx was mined in."
+    #                         },
+    #                         "from_address": {
+    #                             "type": "string",
+    #                             "description": "The address of the acount that signed the tx."
+    #                         },
+    #                         "to_address": {
+    #                             "type": "string",
+    #                             "description": "The destination account or contract for the tx."
+    #                         },
+    #                         "value": {
+    #                             "type": "number",
+    #                             "description": "The amount of wei sent."
+    #                         },
+    #                         "gas_price": {
+    #                             "type": "number",
+    #                             "description": "The gas price in wei."
+    #                         },
+    #                         "gas_limit": {
+    #                             "type": "number",
+    #                             "description": "The gas limit for the transaction."
+    #                         },
+    #                         "nonce": {
+    #                             "type": "number",
+    #                             "description": "The nonce for the transaction."
+    #                         },
+    #                         "input": {
+    #                             "type": "string",
+    #                             "description": "The input data for the tx."
+    #                         }
+    #                     },
+    #                     "required": [
+    #                         "hash",
+    #                         "block_number",
+    #                         "from_address",
+    #                         "to_address",
+    #                         "value",
+    #                         "gas_price",
+    #                         "gas_limit",
+    #                         "nonce",
+    #                         "input"
+    #                     ]
+    #                 }
+    #             }
+    #         },
+    #         "required": ["page", "pages", "result"]
+    #     }
+    # },
+    # {
+    #     "uri": "/gas-price",
+    #     "method": "GET",
+    #     "description": "Get details and estimates on the current gas prices",
+    #     "request": {
+    #         "title": "Request",
+    #         "type": "object",
+    #         "properties": {
+    #             "type": {
+    #                 "type": "string",
+    #                 "description": "The type of calculation to do.  Options: average, mean"
+    #             },
+    #             "block_length": {
+    #                 "type": "number",
+    #                 "description": "How many previous blocks to use in the calculation."
+    #             }
+    #         }
+    #     },
+    #     "response": {
+    #         "title": "Response",
+    #         "type": "object",
+    #         "properties": {
+    #             "results": {
+    #                 "type": "number",
+    #                 "description": "The gas price in wei",
+    #             }
+    #         },
+    #         "required": ["results"]
+    #     }
+    # },
 ]

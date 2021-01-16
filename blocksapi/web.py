@@ -349,9 +349,10 @@ class GasPriceHandler(JsonHandler):
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r"/gas-price/?", GasPriceHandler),
             (r"/block/?", BlockHandler),
-            (r"/transaction/?", TransactionHandler),
+            # Disabled until we have more data
+            # (r"/gas-price/?", GasPriceHandler),
+            # (r"/transaction/?", TransactionHandler),
             (r"/health/?", HealthHandler),
             (r"/?", MainHandler),
         ]
