@@ -21,7 +21,7 @@ user_conf = os.path.expanduser(os.path.join('~', '.config', CONFIG_INI))
 if os.path.isfile(user_conf):
     CONFIG.read(user_conf)
 
-sys_conf = os.path.expanduser(os.path.join('/etc', CONFIG_INI))
+sys_conf = os.path.expanduser(os.path.join('/etc', 'blocksapi', CONFIG_INI))
 if os.path.isfile(sys_conf):
     CONFIG.read(sys_conf)
 

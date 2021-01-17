@@ -11,6 +11,3 @@ name = blocks
 [redis]
 host = localhost
 port = 6379
-
-[ethereum]
-node = https://mainnet.infura.io/
