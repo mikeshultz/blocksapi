@@ -8,21 +8,23 @@ Example
     loglevel = INFO
     page_limit = 200
 """
-import os
 import sys
 import logging
+from pathlib import Path
 from configparser import ConfigParser
 
 CONFIG = ConfigParser()
 
 CONFIG_INI = 'blocksapi.ini'
 
-user_conf = os.path.expanduser(os.path.join('~', '.config', CONFIG_INI))
-if os.path.isfile(user_conf):
+user_conf = Path('~').joinpath('.config', CONFIG_INI).expanduser().resolve()
+if user_conf.is_file():
+    print('Loading configuration from {}.'.format(user_conf))
     CONFIG.read(user_conf)
 
-sys_conf = os.path.expanduser(os.path.join('/etc', 'blocksapi', CONFIG_INI))
-if os.path.isfile(sys_conf):
+sys_conf = Path('/etc').joinpath('blocksapi', CONFIG_INI)
+if sys_conf.is_file():
+    print('Loading configuration from {}.'.format(sys_conf))
     CONFIG.read(sys_conf)
 
 if 'default' not in CONFIG:
