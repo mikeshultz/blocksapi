@@ -8,7 +8,11 @@ log = LOGGER.getChild('ratelimiter')
 class IPLimiter(object):
     """ A class for handling IP limiting """
     def __init__(self):
-        self.store = redis.Redis(host=REDIS.get('host'), port=REDIS.get('port'))
+        self.store = redis.Redis(
+            host=REDIS.get('host'),
+            port=REDIS.get('port'),
+            password=REDIS.get('password'),
+        )
 
     def request(self, ip):
         """ Signal a request and return True if they're allowed """

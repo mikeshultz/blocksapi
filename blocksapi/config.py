@@ -48,12 +48,14 @@ else:
 try:
     REDIS = {
         "host": CONFIG['redis'].get('host', 'localhost'),
-        "port": CONFIG['redis'].get('port', 6379)
+        "port": CONFIG['redis'].get('port', 6379),
+        "password": CONFIG['redis'].get('password'),
     }
 except KeyError:
     REDIS = {
         "host": 'localhost',
-        "port": 6379
+        "port": 6379,
+        "password": None,
     }
 RATE_LIMITER_EXPIRY = 300 # 5 minutes
 RATE_LIMIT = RATE_LIMITER_EXPIRY # 1 request per second
